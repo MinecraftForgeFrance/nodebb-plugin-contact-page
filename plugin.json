@@ -1,0 +1,18 @@
+{
+    "id": "nodebb-plugin-contact-page",
+    "name": "NodeBB Plugin Contact page",
+    "url": "https://github.com/MinecraftForgeFrance/nodebb-plugin-contact-page",
+    "library": "./library.js",
+    "templates": "./static/templates",
+    "scripts": [
+		"static/js/contact.js"
+	],
+    "acpScripts": [
+        "static/js/admin.js"
+    ],
+    "hooks": [
+        { "hook": "static:app.load", "method": "init" },
+        { "hook": "filter:admin.header.build", "method": "addToAdminNav" },
+        { "hook": "filter:config.get", "method": "getConfig" }
+    ]
+}
