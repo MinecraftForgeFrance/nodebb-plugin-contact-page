@@ -13,7 +13,7 @@ const ContactPage = {
         let app = params.router;
         let middleware = params.middleware;
 
-        app.get("/contact", renderContact);
+        app.get("/contact", middleware.buildHeader, renderContact);
 
         // admin panel
         app.get('/admin/plugins/contact-page', middleware.admin.buildHeader, renderAdmin);
@@ -54,7 +54,8 @@ const ContactPage = {
 
 function renderContact(req, res) {
     return res.render('contact', {
-        recaptcha: ContactPage.reCaptchaPubKey
+        recaptcha: ContactPage.reCaptchaPubKey,
+        title: "Contact"
     });
 }
 
