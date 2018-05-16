@@ -1,7 +1,6 @@
-const socketModule = module.parent.require("./socket.io/modules");
-const socketIndex = module.parent.require('./socket.io/index');
-const socketPlugins = module.parent.require('./socket.io/plugins');
+const simpleRecaptcha = require('simple-recaptcha-new');
 const meta = module.parent.require('./meta');
+const emailer = module.parent.require('./emailer');
 
 const ContactPage = {
     reCaptchaPubKey: null,
@@ -14,7 +13,8 @@ const ContactPage = {
         let middleware = params.middleware;
 
         app.get('/contact', middleware.buildHeader, renderContact);
-        //app.post('/contact', middleware.buildHeader, postContact);
+        app.get('/api/contact', renderContact);
+        app.post('/contact', postContact);
 
         // admin panel
         app.get('/admin/plugins/contact-page', middleware.admin.buildHeader, renderAdmin);
@@ -61,7 +61,42 @@ function renderContact(req, res) {
 }
 
 function postContact(req, res) {
-    return res.render('admin/plugins/contact-page');
+    if(!req.body.email || !req.body.name || !req.body.subject || !req.body.message) {
+        return res.json({success: false, msg: 'contact-page:form.incomplete'});
+    }
+    if(ContactPage.reCaptchaPubKey) {
+        if(!req.body['g-recaptcha-response']) {
+            return res.json({success: false, msg: 'contact-page:form.captcha.incomplete'});
+        }
+        simpleRecaptcha(ContactPage.reCaptchaPrivKey, req.ip, req.body['g-recaptcha-response'], (err) => {
+            if (err) {
+                return res.json({success: false, msg: 'contact-page:recaptcha.invalid'});
+            } else {
+                sendMail(req.body.email, req.body.name, req.body.subject, req.body.message, () => {
+                    res.json({success: true});
+                });
+            }
+        });
+    } else {
+        sendMail(req.body.email, req.body.name, req.body.subject, req.body.message, () => {
+            res.json({success: true});
+        });
+    }
+}
+
+function sendMail(from, name, subject, message, callback) {
+    var data = {
+        to: ContactPage.contactEmail,
+        from: meta.config['email:from'] || 'no-reply@' + getHostname(),
+        reply_to: from,
+        from_name: name,
+        subject: subject,
+        html: message,
+        plaintext: message
+    };
+    emailer.sendViaFallback(data, () => {
+        callback();
+    });
 }
 
 function renderAdmin(req, res) {

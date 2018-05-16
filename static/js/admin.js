@@ -1,3 +1,5 @@
+'use strict';
+
 define('admin/plugins/contact-page', ['settings'], function(Settings) {
 	var ContactPage = {};
 	

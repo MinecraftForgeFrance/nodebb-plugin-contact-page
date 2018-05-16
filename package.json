@@ -15,5 +15,8 @@
     "bugs": {
         "url": "https://github.com/MinecraftForgeFrance/nodebb-plugin-contact-page/issues"
     },
-    "homepage": "https://github.com/MinecraftForgeFrance/nodebb-plugin-contact-page#readme"
+    "homepage": "https://github.com/MinecraftForgeFrance/nodebb-plugin-contact-page#readme",
+    "dependencies": {
+        "simple-recaptcha-new": "^1.1.1"
+    }
 }

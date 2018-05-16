@@ -1,5 +1,18 @@
-<h2>Contact</h2>
-<form class="form-horizontal" role="form" method="post">
+<ol class="breadcrumb">
+	<li itemscope="itemscope" itemtype="http://data-vocabulary.org/Breadcrumb">
+		<a href="/" itemprop="url">
+			<span itemprop="title">
+				[[global:home]]
+			</span>
+		</a>
+	</li>
+	<li component="breadcrumb/current" itemscope="itemscope" itemtype="http://data-vocabulary.org/Breadcrumb" class="active">
+        <span itemprop="title">
+            Contact
+        </span>
+	</li>
+</ol>
+<form id="contact-form" class="form-horizontal" role="form" method="post">
     <div class="form-group">
         <label class="control-label col-sm-2" for="email">Email:</label>
         <div class="col-sm-10">
@@ -21,9 +34,10 @@
     <div class="form-group">
         <label class="control-label col-sm-2" for="message">Message:</label>
         <div class="col-sm-10">
-            <textarea class="form-control vresize" rows="8" id="message"></textarea>
+            <textarea class="form-control vresize" rows="8" id="message" name="message"></textarea>
         </div>
     </div>
+    <input type="hidden" name="_csrf" value="{config.csrf_token}" />
     <!-- IF recaptcha -->
     <div class="form-group">
         <div class="g-recaptcha" data-sitekey="{recaptcha}"></div>
