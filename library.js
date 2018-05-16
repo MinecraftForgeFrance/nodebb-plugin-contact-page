@@ -13,7 +13,8 @@ const ContactPage = {
         let app = params.router;
         let middleware = params.middleware;
 
-        app.get("/contact", middleware.buildHeader, renderContact);
+        app.get('/contact', middleware.buildHeader, renderContact);
+        //app.post('/contact', middleware.buildHeader, postContact);
 
         // admin panel
         app.get('/admin/plugins/contact-page', middleware.admin.buildHeader, renderAdmin);
@@ -57,6 +58,10 @@ function renderContact(req, res) {
         recaptcha: ContactPage.reCaptchaPubKey,
         title: "Contact"
     });
+}
+
+function postContact(req, res) {
+    return res.render('admin/plugins/contact-page');
 }
 
 function renderAdmin(req, res) {

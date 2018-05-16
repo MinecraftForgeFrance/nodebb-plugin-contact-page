@@ -10,6 +10,9 @@
     "acpScripts": [
         "static/js/admin.js"
     ],
+    "less": [
+		"static/style.less"
+	],
     "hooks": [
         { "hook": "static:app.load", "method": "init" },
         { "hook": "filter:admin.header.build", "method": "addToAdminNav" },
