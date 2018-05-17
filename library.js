@@ -26,7 +26,7 @@ const ContactPage = {
             }
             else {
                 // load setting from config if exist
-                for(let settingName in ["reCaptchaPubKey", "reCaptchaPrivKey", "contactEmail", "messageFooter"]) {
+                for(let settingName of ["reCaptchaPubKey", "reCaptchaPrivKey", "contactEmail", "messageFooter"]) {
                     if (options.hasOwnProperty(settingName)) {
                         ContactPage[settingName] = options[settingName];
                     }
@@ -62,40 +62,42 @@ function renderContact(req, res) {
 
 function postContact(req, res) {
     if(!req.body.email || !req.body.name || !req.body.subject || !req.body.message) {
-        return res.json({success: false, msg: 'contact-page:form.incomplete'});
+        return res.status(400).json({success: false, msg: '[[contactpage:error.incomplete]]'});
     }
     if(ContactPage.reCaptchaPubKey) {
         if(!req.body['g-recaptcha-response']) {
-            return res.json({success: false, msg: 'contact-page:form.captcha.incomplete'});
+            return res.status(400).json({success: false, msg: '[[contactpage:error.incomplete.recaptcha]]'});
         }
         simpleRecaptcha(ContactPage.reCaptchaPrivKey, req.ip, req.body['g-recaptcha-response'], (err) => {
             if (err) {
-                return res.json({success: false, msg: 'contact-page:recaptcha.invalid'});
+                return res.status(400).json({success: false, msg: '[[contactpage:error.invalid.recaptcha]]'});
             } else {
-                sendMail(req.body.email, req.body.name, req.body.subject, req.body.message, () => {
-                    res.json({success: true});
-                });
+                sendMail(req.body.email, req.body.name, req.body.subject, req.body.message, res);
             }
         });
     } else {
-        sendMail(req.body.email, req.body.name, req.body.subject, req.body.message, () => {
-            res.json({success: true});
-        });
+        sendMail(req.body.email, req.body.name, req.body.subject, req.body.message, res);
     }
 }
 
-function sendMail(from, name, subject, message, callback) {
-    var data = {
+function sendMail(from, name, subject, message, res) {
+    if(ContactPage.messageFooter) {
+        message += "\n\n" + ContactPage.messageFooter;
+    }
+    let mailData = {
+        from: `"${name}" <${from}>`,
         to: ContactPage.contactEmail,
-        from: meta.config['email:from'] || 'no-reply@' + getHostname(),
-        reply_to: from,
-        from_name: name,
-        subject: subject,
-        html: message,
-        plaintext: message
+        replyTo: from,
+        subject: subject, 
+        text: message
     };
-    emailer.sendViaFallback(data, () => {
-        callback();
+
+    // send mail with defined transport object
+    emailer.fallbackTransport.sendMail(mailData, (error, info) => {
+        if (error) {
+            return res.status(500).json({success: false, message: '[[contactpage:error.mail]]'});
+        }
+        return res.json({success: true});
     });
 }
 

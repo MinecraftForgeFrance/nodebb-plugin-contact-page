@@ -17,5 +17,7 @@
         { "hook": "static:app.load", "method": "init" },
         { "hook": "filter:admin.header.build", "method": "addToAdminNav" },
         { "hook": "filter:config.get", "method": "getConfig" }
-    ]
+    ],
+    "languages": "languages",
+    "defaultLang": "en_GB"
 }

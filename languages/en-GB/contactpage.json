@@ -1,0 +1,15 @@
+{
+    "contact": "Contact",
+    "form.email": "Email",
+    "form.name": "Name",
+    "form.subject": "Subject",
+    "form.message": "Message",
+    "btn.send": "Send",
+    "contact-error": "Failed to contact",
+    "invalid.email": "Invalid email",
+    "error.mail": "Server failed to send mail. Please try later",
+    "error.incomplete": "Please fill all fields",
+    "error.incomplete.recaptcha": "Please fill the captcha!",
+    "error.invalid.recaptcha": "Captcha is invalid!",
+    "send.success": "Your message has been sent. We will respond quickly."
+}
