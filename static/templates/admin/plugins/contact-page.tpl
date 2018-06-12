@@ -1,7 +1,7 @@
 <form role="form" class="contact-page-settings">
 	<div class="row">
 		<div class="col-xs-12">
-            <h2>Discord bridge settings</h2>
+            <h2>Contact page settings</h2>
             <div class="row">
                 <div class="col-lg-6 col-xs-12">
                     <div class="panel panel-default">
