@@ -13,8 +13,12 @@
 	</li>
 </ol>
 
-<div class="alert alert-danger hidden" id="contact-notify" >
+<div class="alert alert-danger hidden" id="contact-notify">
     <strong>[[contactpage:contact-error]]</strong>
+    <p></p>
+</div>
+
+<div class="alert alert-success hidden" id="contact-notify-success">
     <p></p>
 </div>
 

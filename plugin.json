@@ -16,7 +16,8 @@
     "hooks": [
         { "hook": "static:app.load", "method": "init" },
         { "hook": "filter:admin.header.build", "method": "addToAdminNav" },
-        { "hook": "filter:config.get", "method": "getConfig" }
+        { "hook": "filter:config.get", "method": "getConfig" },
+        { "hook": "filter:email.modify", "method": "modifyEmail"}
     ],
     "languages": "languages",
     "defaultLang": "en_GB"

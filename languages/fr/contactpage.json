@@ -12,5 +12,6 @@
     "error.incomplete": "Merci de remplir tous les champs",
     "error.incomplete.recaptcha": "Merci de compléter le captcha !",
     "error.invalid.recaptcha": "Le captcha n'est pas valide !",
-    "send.success": "Votre message a bien été envoyé. Nous y repondrons rapidement."
+    "send.success": "Votre message a bien été envoyé. Nous y repondrons rapidement.",
+    "email.header": "%1 a envoyé le message suivant :"
 }

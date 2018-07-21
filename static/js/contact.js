@@ -40,16 +40,18 @@ define('forum/contact', ['translator', 'https://www.google.com/recaptcha/api.js?
 		function showError(msg) {
 			translator.translate(msg, function(translatedMsg) {
 				$('#contact-notify').find('p').html(translatedMsg);
-				$('#contact-notify').removeClass('alert-success hidden').addClass('alert-danger');
+				$('#contact-notify').removeClass('hidden');
+				$('#contact-notify-success').hide();
 				$('#contact-notify').show();
 			});
 		}
 	
 		function showSuccess(msg) {
 			translator.translate(msg, function(translatedMsg) {
-				$('#contact-notify').find('p').html(translatedMsg);
-				$('#contact-notify').removeClass('alert-danger hidden').addClass('alert-success');
-				$('#contact-notify').show();
+				$('#contact-notify-success').find('p').html(translatedMsg);
+				$('#contact-notify-success').removeClass('hidden');
+				$('#contact-notify').hide();
+				$('#contact-notify-success').show();
 			});
 		}
 

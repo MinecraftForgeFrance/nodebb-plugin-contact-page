@@ -1,6 +1,7 @@
 const simpleRecaptcha = require('simple-recaptcha-new');
 const meta = module.parent.require('./meta');
 const emailer = module.parent.require('./emailer');
+const winston = module.parent.require('winston')
 
 const ContactPage = {
     reCaptchaPubKey: null,
@@ -22,7 +23,7 @@ const ContactPage = {
 
         meta.settings.get('contactpage', (err, options) => {
             if (err) {
-                console.log(`[plugin/contactpage] Unable to retrieve settings, will keep defaults: ${err.message}`);
+                winston.warn(`[plugin/contactpage] Unable to retrieve settings, will keep defaults: ${err.message}`);
             }
             else {
                 // load setting from config if exist
@@ -50,6 +51,12 @@ const ContactPage = {
         });
 
         callback(null, header);
+    },
+    modifyEmail(mailData, callback) {
+        if(mailData && mailData.template == "contact-page") {
+            mailData = modifyFrom(mailData);
+        }  
+        callback(null, mailData);
     }
 };
 
@@ -81,24 +88,32 @@ function postContact(req, res) {
 }
 
 function sendMail(from, name, subject, message, res) {
-    if(ContactPage.messageFooter) {
-        message += "\n\n" + ContactPage.messageFooter;
+    let mailParams = {
+        content_text: message.replace(/(?:\r\n|\r|\n)/g, '<br>'),
+        footer_text: ContactPage.messageFooter,
+        from_name: name,
+        subject: subject,
+        template: 'contact-page',
+        uid: 0,
+        from: from,
     }
-    let mailData = {
-        from: `"${name}" <${from}>`,
-        to: ContactPage.contactEmail,
-        replyTo: from,
-        subject: subject, 
-        text: message
-    };
 
-    // send mail with defined transport object
-    emailer.fallbackTransport.sendMail(mailData, (error, info) => {
+    mailParams = Object.assign({}, emailer._defaultPayload, mailParams);
+
+    emailer.sendToEmail('contact-page', ContactPage.contactEmail, undefined, mailParams, (error) => {
         if (error) {
+            winston.error("[plugin/contactpage] Failed to send mail:" + error);
             return res.status(500).json({success: false, message: '[[contactpage:error.mail]]'});
         }
         return res.json({success: true});
     });
+}
+
+function modifyFrom(mailData) {
+    mailData.from = mailData._raw.from;
+    mailData.from_name = mailData._raw.from_name;
+    mailData.replyTo = mailData._raw.from;
+    return mailData;
 }
 
 function renderAdmin(req, res) {
