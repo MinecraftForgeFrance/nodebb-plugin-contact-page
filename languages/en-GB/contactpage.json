@@ -4,6 +4,7 @@
     "form.name": "Name",
     "form.subject": "Subject",
     "form.message": "Message",
+    "form.captcha": "Captcha",
     "btn.send": "Send",
     "contact-error": "Failed to contact",
     "invalid.email": "Invalid email",

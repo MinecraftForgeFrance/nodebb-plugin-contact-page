@@ -1,6 +1,6 @@
 {
     "name": "nodebb-plugin-contact-page",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "A nodeBB plugin to a contact page",
     "main": "library.js",
     "repository": {

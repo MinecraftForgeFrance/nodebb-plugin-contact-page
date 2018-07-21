@@ -1,6 +1,6 @@
 'use strict';
 
-define('forum/contact', ['translator', 'https://www.google.com/recaptcha/api.js'], function(translator) {
+define('forum/contact', ['translator', 'https://www.google.com/recaptcha/api.js?onload=renderContactPageCaptcha&render=explicit'], function(translator) {
 	var Contact = {};
 	Contact.init = function() {
 		var email = $('#email');
@@ -52,7 +52,25 @@ define('forum/contact', ['translator', 'https://www.google.com/recaptcha/api.js'
 				$('#contact-notify').show();
 			});
 		}
+
+		// if grecaptcha.render is available, this is not the first load, so we need to call renderContactPageCaptcha here.
+		if(grecaptcha && grecaptcha.render) {
+			renderContactPageCaptcha();
+		}
 	};
-	
 	return Contact;
 });
+
+function renderContactPageCaptcha() {
+	if($('#contact-page-google-recaptcha').length > 0) {
+		grecaptcha.render('contact-page-google-recaptcha', {
+			sitekey: config.contactpage.reCaptchaPubKey,
+			callback: function() {
+				var error = utils.param('error');
+				if (error) {
+					app.alertError(error);
+				}
+			}
+		});
+	}
+}

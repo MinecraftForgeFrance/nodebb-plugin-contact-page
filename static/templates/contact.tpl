@@ -46,8 +46,9 @@
     <input type="hidden" name="_csrf" value="{config.csrf_token}" />
     <!-- IF recaptcha -->
     <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-            <div class="g-recaptcha" data-sitekey="{recaptcha}"></div>
+        <label class="control-label col-sm-2">[[contactpage:form.captcha]]</label>
+        <div class="col-sm-10">
+            <div id="contact-page-google-recaptcha"></div>
         </div>
     </div>
     <!-- ENDIF recaptcha -->
