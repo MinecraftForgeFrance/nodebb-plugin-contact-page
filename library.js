@@ -1,7 +1,7 @@
 const simpleRecaptcha = require('simple-recaptcha-new');
-const meta = module.parent.require('./meta');
-const emailer = module.parent.require('./emailer');
-const winston = module.parent.require('winston')
+const meta = require.main.require('./src/meta');
+const emailer = require.main.require('./src/emailer');
+const winston = require.main.require('winston')
 
 const ContactPage = {
     reCaptchaPubKey: null,
@@ -87,7 +87,7 @@ function postContact(req, res) {
     }
 }
 
-function sendMail(from, name, subject, message, res) {
+function sendMail(replyTo, name, subject, message, res) {
     let mailParams = {
         content_text: message.replace(/(?:\r\n|\r|\n)/g, '<br>'),
         footer_text: ContactPage.messageFooter,
@@ -95,7 +95,7 @@ function sendMail(from, name, subject, message, res) {
         subject: subject,
         template: 'contact-page',
         uid: 0,
-        from: from,
+        replyTo,
     }
 
     mailParams = Object.assign({}, emailer._defaultPayload, mailParams);
@@ -110,9 +110,8 @@ function sendMail(from, name, subject, message, res) {
 }
 
 function modifyFrom(mailData) {
-    mailData.from = mailData._raw.from;
     mailData.from_name = mailData._raw.from_name;
-    mailData.replyTo = mailData._raw.from;
+    mailData.replyTo = mailData._raw.replyTo;
     return mailData;
 }
 
