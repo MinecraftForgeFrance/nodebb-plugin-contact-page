@@ -1,7 +1,8 @@
 'use strict';
 
-define('forum/contact', ['translator', 'https://www.google.com/recaptcha/api.js?onload=renderContactPageCaptcha&render=explicit'], function(translator) {
+define('forum/contact', ['translator', '//www.recaptcha.net/recaptcha/api.js?onload=renderContactPageCaptcha&render=explicit'], function(translator) {
 	var Contact = {};
+	var firstLoad = true;
 	Contact.init = function() {
 		var email = $('#email');
 
@@ -55,16 +56,18 @@ define('forum/contact', ['translator', 'https://www.google.com/recaptcha/api.js?
 			});
 		}
 
-		// if grecaptcha.render is available, this is not the first load, so we need to call renderContactPageCaptcha here.
-		if(grecaptcha && grecaptcha.render) {
+		// Recaptcha is loaded from onload callback on first load.
+		if (!firstLoad) {
 			renderContactPageCaptcha();
+		} else {
+			firstLoad = false;
 		}
 	};
 	return Contact;
 });
 
-function renderContactPageCaptcha() {
-	if($('#contact-page-google-recaptcha').length > 0) {
+renderContactPageCaptcha = function() {
+	if (config.contactpage.reCaptchaPubKey) {
 		grecaptcha.render('contact-page-google-recaptcha', {
 			sitekey: config.contactpage.reCaptchaPubKey,
 			callback: function() {
