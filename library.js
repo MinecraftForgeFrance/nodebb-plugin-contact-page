@@ -1,7 +1,8 @@
 const simpleRecaptcha = require('simple-recaptcha-new');
 const meta = require.main.require('./src/meta');
+const winston = require.main.require('winston');
 const emailer = require.main.require('./src/emailer');
-const winston = require.main.require('winston')
+const helpers = require.main.require('./src/controllers/helpers');
 
 const ContactPage = {
     reCaptchaPubKey: null,
@@ -63,6 +64,7 @@ const ContactPage = {
 function renderContact(req, res) {
     return res.render('contact', {
         recaptcha: ContactPage.reCaptchaPubKey,
+        breadcrumbs: helpers.buildBreadcrumbs([{ text: '[[contactpage:contact]]' }]),
         title: "Contact"
     });
 }

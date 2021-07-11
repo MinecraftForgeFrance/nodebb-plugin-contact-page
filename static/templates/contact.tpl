@@ -1,17 +1,4 @@
-<ol class="breadcrumb">
-	<li itemscope="itemscope" itemtype="http://data-vocabulary.org/Breadcrumb">
-		<a href="/" itemprop="url">
-			<span itemprop="title">
-				[[global:home]]
-			</span>
-		</a>
-	</li>
-	<li component="breadcrumb/current" itemscope="itemscope" itemtype="http://data-vocabulary.org/Breadcrumb" class="active">
-        <span itemprop="title">
-            [[contactpage:contact]]
-        </span>
-	</li>
-</ol>
+<!-- IMPORT partials/breadcrumbs.tpl -->
 
 <div class="alert alert-danger hidden" id="contact-notify">
     <strong>[[contactpage:contact-error]]</strong>
