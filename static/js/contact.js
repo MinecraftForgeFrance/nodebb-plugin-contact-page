@@ -1,6 +1,6 @@
 'use strict';
 
-define('forum/contact', ['translator', '//www.recaptcha.net/recaptcha/api.js?onload=renderContactPageCaptcha&render=explicit'], function(translator) {
+define('forum/contact', ['translator', 'jquery-form', '//www.recaptcha.net/recaptcha/api.js?onload=renderContactPageCaptcha&render=explicit'], function(translator) {
 	var Contact = {};
 	var firstLoad = true;
 	Contact.init = function() {

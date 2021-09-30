@@ -69,27 +69,28 @@ function renderContact(req, res) {
     });
 }
 
-function postContact(req, res) {
-    if(!req.body.email || !req.body.name || !req.body.subject || !req.body.message) {
-        return res.status(400).json({success: false, msg: '[[contactpage:error.incomplete]]'});
+async function postContact(req, res) {
+    if (!req.body.email || !req.body.name || !req.body.subject || !req.body.message) {
+        return res.status(400).json({ success: false, msg: '[[contactpage:error.incomplete]]' });
     }
-    if(ContactPage.reCaptchaPubKey) {
+
+    if (ContactPage.reCaptchaPubKey) {
         if(!req.body['g-recaptcha-response']) {
-            return res.status(400).json({success: false, msg: '[[contactpage:error.incomplete.recaptcha]]'});
+            return res.status(400).json({ success: false, msg: '[[contactpage:error.incomplete.recaptcha]]' });
         }
-        simpleRecaptcha(ContactPage.reCaptchaPrivKey, req.ip, req.body['g-recaptcha-response'], (err) => {
+        simpleRecaptcha(ContactPage.reCaptchaPrivKey, req.ip, req.body['g-recaptcha-response'], async (err) => {
             if (err) {
-                return res.status(400).json({success: false, msg: '[[contactpage:error.invalid.recaptcha]]'});
+                return res.status(400).json({ success: false, msg: '[[contactpage:error.invalid.recaptcha]]' });
             } else {
-                sendMail(req.body.email, req.body.name, req.body.subject, req.body.message, res);
+                await sendMail(req.body.email, req.body.name, req.body.subject, req.body.message, res);
             }
         });
     } else {
-        sendMail(req.body.email, req.body.name, req.body.subject, req.body.message, res);
+        await sendMail(req.body.email, req.body.name, req.body.subject, req.body.message, res);
     }
 }
 
-function sendMail(replyTo, name, subject, message, res) {
+async function sendMail(replyTo, name, subject, message, res) {
     let mailParams = {
         content_text: message.replace(/(?:\r\n|\r|\n)/g, '<br>'),
         footer_text: ContactPage.messageFooter,
@@ -102,13 +103,14 @@ function sendMail(replyTo, name, subject, message, res) {
 
     mailParams = Object.assign({}, emailer._defaultPayload, mailParams);
 
-    emailer.sendToEmail('contact-page', ContactPage.contactEmail, undefined, mailParams, (error) => {
-        if (error) {
-            winston.error("[plugin/contactpage] Failed to send mail:" + error);
-            return res.status(500).json({success: false, message: '[[contactpage:error.mail]]'});
-        }
-        return res.json({success: true});
-    });
+    try {
+        await emailer.sendToEmail('contact-page', ContactPage.contactEmail, undefined, mailParams);
+        res.json({ success: true });
+    }
+    catch (error) {
+        winston.error("[plugin/contactpage] Failed to send mail:" + error);
+        res.status(500).json({ success: false, message: '[[contactpage:error.mail]]' });
+    }
 }
 
 function modifyFrom(mailData) {

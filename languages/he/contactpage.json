@@ -1,0 +1,17 @@
+{
+    "contact": "יצירת קשר",
+    "form.email": "כתובת דואל",
+    "form.name": "שם",
+    "form.subject": "כותרת",
+    "form.message": "הודעה",
+    "form.captcha": "אימות",
+    "btn.send": "שלח",
+    "contact-error": "שגיאה בשליחה",
+    "invalid.email": "דואל שגוי",
+    "error.mail": "השרת נכשל בשליחת המייל. נסה שוב מאוחר יותר",
+    "error.incomplete": "אנא מלא את כל השדות",
+    "error.incomplete.recaptcha": "אנא בצע את האימות!",
+    "error.invalid.recaptcha": "האימות שגוי!",
+    "send.success": "הודעתך נשלחה. נחזור אליך בהקדם.",
+    "email.header": "%1 שולח את ההודעה:"
+}

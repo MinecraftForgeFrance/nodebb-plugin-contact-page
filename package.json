@@ -1,6 +1,6 @@
 {
     "name": "nodebb-plugin-contact-page",
-    "version": "1.1.2",
+    "version": "1.2.0",
     "description": "A nodeBB plugin to a contact page",
     "main": "library.js",
     "repository": {
@@ -20,6 +20,6 @@
         "simple-recaptcha-new": "^1.1.1"
     },
     "nbbpm": {
-        "compatibility": "^1.17.0"
+        "compatibility": "^1.18.0"
     }
 }
