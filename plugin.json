@@ -4,12 +4,10 @@
     "url": "https://github.com/MinecraftForgeFrance/nodebb-plugin-contact-page",
     "library": "./library.js",
     "templates": "./static/templates",
-    "scripts": [
-		"static/js/contact.js"
-	],
-    "acpScripts": [
-        "static/js/admin.js"
-    ],
+    "modules": {
+		"../admin/plugins/contact-page.js": "static/js/admin.js",
+        "../client/contact.js": "static/js/contact.js"
+	},
     "less": [
 		"static/style.less"
 	],

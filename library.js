@@ -3,6 +3,7 @@ const meta = require.main.require('./src/meta');
 const winston = require.main.require('winston');
 const emailer = require.main.require('./src/emailer');
 const helpers = require.main.require('./src/controllers/helpers');
+const routeHelpers = require.main.require('./src/routes/helpers');
 
 const ContactPage = {
     reCaptchaPubKey: null,
@@ -10,54 +11,48 @@ const ContactPage = {
     contactEmail: null,
     messageFooter: null,
     // init the plugin
-    init(params, callback) {
-        let app = params.router;
-        let middleware = params.middleware;
+    async init(params) {
+        const { router, middleware } = params;
 
-        app.get('/contact', middleware.buildHeader, renderContact);
-        app.get('/api/contact', renderContact);
-        app.post('/contact', postContact);
+        router.get('/contact', middleware.buildHeader, renderContact);
+        router.get('/api/contact', renderContact);
+        router.post('/contact', postContact);
 
         // admin panel
-        app.get('/admin/plugins/contact-page', middleware.admin.buildHeader, renderAdmin);
-        app.get('/api/admin/plugins/contact-page', renderAdmin);
+        routeHelpers.setupAdminPageRoute(router, '/admin/plugins/contact-page', [], renderAdmin);
 
-        meta.settings.get('contactpage', (err, options) => {
-            if (err) {
-                winston.warn(`[plugin/contactpage] Unable to retrieve settings, will keep defaults: ${err.message}`);
-            }
-            else {
-                // load setting from config if exist
-                for(let settingName of ["reCaptchaPubKey", "reCaptchaPrivKey", "contactEmail", "messageFooter"]) {
-                    if (options.hasOwnProperty(settingName)) {
-                        ContactPage[settingName] = options[settingName];
-                    }
+        try {
+            const options = await meta.settings.get('contactpage');
+            for(let settingName of ["reCaptchaPubKey", "reCaptchaPrivKey", "contactEmail", "messageFooter"]) {
+                if (options.hasOwnProperty(settingName)) {
+                    ContactPage[settingName] = options[settingName];
                 }
             }
-        });
-
-        callback();
+        }
+        catch (err) {
+            winston.warn(`[plugin/contactpage] Unable to retrieve settings, will keep defaults: ${err.message}`);
+        }
     },
     // add public token to api
-    getConfig(config, callback) {
+    async getConfig(config) {
         config.contactpage = {
             reCaptchaPubKey: ContactPage.reCaptchaPubKey
         };
-        callback(null, config);
+        return config;
     },
-    addToAdminNav(header, callback) {
+    async addToAdminNav(header) {
         header.plugins.push({
             route: '/plugins/contact-page',
             name: 'Contact page',
         });
 
-        callback(null, header);
+        return header;
     },
-    modifyEmail(mailData, callback) {
+    async modifyEmail(mailData) {
         if(mailData && mailData.template == "contact-page") {
             mailData = modifyFrom(mailData);
-        }  
-        callback(null, mailData);
+        }
+        return mailData;
     }
 };
 

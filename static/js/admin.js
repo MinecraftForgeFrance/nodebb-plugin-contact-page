@@ -1,6 +1,6 @@
 'use strict';
 
-define('admin/plugins/contact-page', ['settings'], function(Settings) {
+define('admin/plugins/contact-page', ['settings', 'alerts'], function(Settings, alerts) {
 	var ContactPage = {};
 	
 	ContactPage.init = function() {
@@ -8,7 +8,7 @@ define('admin/plugins/contact-page', ['settings'], function(Settings) {
 	
 		$('#save').on('click', function() {
             Settings.save('contactpage', $('.contact-page-settings'), function() {
-                app.alert({
+                alerts.alert({
                     type: 'success',
                     alert_id: 'contactpage-saved',
                     title: 'Settings Saved',

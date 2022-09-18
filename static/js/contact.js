@@ -1,9 +1,8 @@
 'use strict';
 
-define('forum/contact', ['translator', 'jquery-form', '//www.recaptcha.net/recaptcha/api.js?onload=renderContactPageCaptcha&render=explicit'], function(translator) {
+define('forum/contact', ['translator', 'jquery-form'], function(translator) {
 	var Contact = {};
-	var firstLoad = true;
-	Contact.init = function() {
+	Contact.init = async () => {
 		var email = $('#email');
 
 		email.on('blur', function () {
@@ -23,16 +22,16 @@ define('forum/contact', ['translator', 'jquery-form', '//www.recaptcha.net/recap
 				headers: {
 					'x-csrf-token': config.csrf_token,
 				},
-				success: function (data) {
+				success: (data) => {
 					showSuccess('[[contactpage:send.success]]');
 					$('#contact-form').hide();
 				},
-				error: function (resp) {
+				error: (resp) => {
 					if(resp && (resp.status == 400 || resp.status == 500) && resp.responseJSON) {
 						showError(resp.responseJSON.msg);
 					}
 					else {
-						showError('[[contactpage:error.unknow]]');
+						showError('[[contactpage:error.mail]]');
 					}
 				}
 			});
@@ -46,7 +45,7 @@ define('forum/contact', ['translator', 'jquery-form', '//www.recaptcha.net/recap
 				$('#contact-notify').show();
 			});
 		}
-	
+
 		function showSuccess(msg) {
 			translator.translate(msg, function(translatedMsg) {
 				$('#contact-notify-success').find('p').html(translatedMsg);
@@ -56,26 +55,55 @@ define('forum/contact', ['translator', 'jquery-form', '//www.recaptcha.net/recap
 			});
 		}
 
-		// Recaptcha is loaded from onload callback on first load.
-		if (!firstLoad) {
-			renderContactPageCaptcha();
-		} else {
-			firstLoad = false;
+		function injectTag(tagName, attrs, options) {
+			options = options || {};
+
+			var tag = document.createElement(tagName);
+			tag.onload = options.onload || null; // @ie8; img.onload cannot be undefined
+
+			var setAttr = tag.setAttribute ?
+				function (tag, key, value) { tag.setAttribute(key, value); return tag; } :
+				function (tag, key, value) { tag[key] = value; return tag; };
+
+			Object.keys(attrs).forEach(function (key) {
+				tag = setAttr(tag, key, attrs[key]);
+			});
+
+			if (options.insertBefore) {
+				options.insertBefore.parentNode.insertBefore(tag, options.insertBefore);
+			} else if (options.appendChild) {
+				options.appendChild.appendChild(tag);
+			} else {
+				var scripts = document.getElementsByTagName('script');
+				scripts[scripts.length - 1].parentNode.appendChild(tag);
+			}
+		}
+
+		function injectScript(src, options) {
+			options = options || {};
+			injectTag('script', { src: src, type: 'text/javascript', async: '', defer: '' }, options);
+		}
+
+		// Load Google recaptcha if configured
+		if (config.contactpage.reCaptchaPubKey !== undefined) {
+			if (!$('script[src*="www.recaptcha.net/recaptcha/api.js"]').length) {
+				injectScript('//www.recaptcha.net/recaptcha/api.js?onload=__contactPageRenderReCaptcha__&render=explicit');
+			} else if (grecaptcha !== undefined) {
+				window.__contactPageRenderReCaptcha__();
+			}
 		}
 	};
 	return Contact;
 });
 
-renderContactPageCaptcha = function() {
-	if (config.contactpage.reCaptchaPubKey) {
-		grecaptcha.render('contact-page-google-recaptcha', {
-			sitekey: config.contactpage.reCaptchaPubKey,
-			callback: function() {
-				var error = utils.param('error');
-				if (error) {
-					app.alertError(error);
-				}
+window.__contactPageRenderReCaptcha__ = function() {
+	grecaptcha.render('contact-page-google-recaptcha', {
+		sitekey: config.contactpage.reCaptchaPubKey,
+		callback: function() {
+			var error = utils.param('error');
+			if (error) {
+				app.alertError(error);
 			}
-		});
-	}
+		}
+	});
 }
