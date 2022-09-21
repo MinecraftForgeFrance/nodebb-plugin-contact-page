@@ -35,14 +35,22 @@
         </div>
     </div>
     <input type="hidden" name="_csrf" value="{config.csrf_token}" />
-    <!-- IF recaptcha -->
+    {{{if recaptcha}}}
     <div class="form-group">
         <label class="control-label col-sm-2">[[contactpage:form.captcha]]</label>
         <div class="col-sm-10">
             <div id="contact-page-google-recaptcha"></div>
         </div>
     </div>
-    <!-- ENDIF recaptcha -->
+    {{{end}}}
+    {{{if hcaptcha}}}
+    <div class="form-group">
+        <label class="control-label col-sm-2">[[contactpage:form.captcha]]</label>
+        <div class="col-sm-10">
+            <div id="contact-page-h-captcha"></div>
+        </div>
+    </div>
+    {{{end}}}
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             <button id="send" class="btn btn-primary">[[contactpage:btn.send]]</button>

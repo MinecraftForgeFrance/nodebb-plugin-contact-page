@@ -3,7 +3,7 @@
 		<div class="col-xs-12">
             <h2>Contact page settings</h2>
             <div class="row">
-                <div class="col-lg-6 col-xs-12">
+                <div class="col-md-6 col-xs-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">Main settings</div>
                         <div class="panel-body">
@@ -22,7 +22,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6 col-xs-12">
+                <div class="col-md-6 col-xs-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">Google Re-Captcha (optional)</div>
                         <div class="panel-body">
@@ -38,6 +38,27 @@
                                     Private API key (keep it secret)
                                 </label>
                                 <input class="form-control" type="text" name="reCaptchaPrivKey" id="reCaptchaPrivKey" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xs-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">hCaptcha (optional)</div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label for="hcaptchaPubKey">
+                                    API key
+                                </label>
+                                <input class="form-control" type="text" name="hcaptchaPubKey" id="hcaptchaPubKey" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="hcaptchaSecretKey">
+                                    Secret key (keep it secret)
+                                </label>
+                                <input class="form-control" type="text" name="hcaptchaSecretKey" id="hcaptchaSecretKey" />
                             </div>
                         </div>
                     </div>

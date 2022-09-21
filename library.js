@@ -1,4 +1,6 @@
+const { verify } = require('hcaptcha');
 const simpleRecaptcha = require('simple-recaptcha-new');
+
 const meta = require.main.require('./src/meta');
 const winston = require.main.require('winston');
 const emailer = require.main.require('./src/emailer');
@@ -8,14 +10,15 @@ const routeHelpers = require.main.require('./src/routes/helpers');
 const ContactPage = {
     reCaptchaPubKey: null,
     reCaptchaPrivKey: null,
+    hcaptchaPubKey: null,
+    hcaptchaSecretKey: null,
     contactEmail: null,
     messageFooter: null,
     // init the plugin
     async init(params) {
-        const { router, middleware } = params;
+        const { router } = params;
 
-        router.get('/contact', middleware.buildHeader, renderContact);
-        router.get('/api/contact', renderContact);
+        routeHelpers.setupPageRoute(router, '/contact', renderContact);
         router.post('/contact', postContact);
 
         // admin panel
@@ -23,7 +26,7 @@ const ContactPage = {
 
         try {
             const options = await meta.settings.get('contactpage');
-            for(let settingName of ["reCaptchaPubKey", "reCaptchaPrivKey", "contactEmail", "messageFooter"]) {
+            for(let settingName of ['reCaptchaPubKey', 'reCaptchaPrivKey', 'hcaptchaPubKey', 'hcaptchaSecretKey', 'contactEmail', 'messageFooter']) {
                 if (options.hasOwnProperty(settingName)) {
                     ContactPage[settingName] = options[settingName];
                 }
@@ -36,7 +39,8 @@ const ContactPage = {
     // add public token to api
     async getConfig(config) {
         config.contactpage = {
-            reCaptchaPubKey: ContactPage.reCaptchaPubKey
+            reCaptchaPubKey: ContactPage.reCaptchaPubKey,
+            hcaptchaPubKey: ContactPage.hcaptchaPubKey
         };
         return config;
     },
@@ -49,7 +53,7 @@ const ContactPage = {
         return header;
     },
     async modifyEmail(mailData) {
-        if(mailData && mailData.template == "contact-page") {
+        if(mailData && mailData.template == 'contact-page') {
             mailData = modifyFrom(mailData);
         }
         return mailData;
@@ -59,8 +63,9 @@ const ContactPage = {
 function renderContact(req, res) {
     return res.render('contact', {
         recaptcha: ContactPage.reCaptchaPubKey,
+        hcaptcha: ContactPage.hcaptchaPubKey,
         breadcrumbs: helpers.buildBreadcrumbs([{ text: '[[contactpage:contact]]' }]),
-        title: "Contact"
+        title: '[[contactpage:contact]]'
     });
 }
 
@@ -69,23 +74,49 @@ async function postContact(req, res) {
         return res.status(400).json({ success: false, msg: '[[contactpage:error.incomplete]]' });
     }
 
-    if (ContactPage.reCaptchaPubKey) {
-        if(!req.body['g-recaptcha-response']) {
-            return res.status(400).json({ success: false, msg: '[[contactpage:error.incomplete.recaptcha]]' });
-        }
-        simpleRecaptcha(ContactPage.reCaptchaPrivKey, req.ip, req.body['g-recaptcha-response'], async (err) => {
-            if (err) {
-                return res.status(400).json({ success: false, msg: '[[contactpage:error.invalid.recaptcha]]' });
-            } else {
-                await sendMail(req.body.email, req.body.name, req.body.subject, req.body.message, res);
+    try {
+        if (ContactPage.reCaptchaPubKey && ContactPage.reCaptchaPrivKey) {
+            if(!req.body['g-recaptcha-response']) {
+                return res.status(400).json({ success: false, msg: '[[contactpage:error.incomplete.recaptcha]]' });
             }
-        });
-    } else {
-        await sendMail(req.body.email, req.body.name, req.body.subject, req.body.message, res);
+            await checkReCaptcha(ContactPage.reCaptchaPrivKey, req.ip, req.body['g-recaptcha-response']);
+        }
+
+        if (ContactPage.hcaptchaPubKey && ContactPage.hcaptchaSecretKey) {
+            if(!req.body['h-captcha-response']) {
+                return res.status(400).json({ success: false, msg: '[[contactpage:error.incomplete.recaptcha]]' });
+            }
+            await verify(ContactPage.hcaptchaSecretKey, req.body['h-captcha-response']);
+        }
+    }
+    catch (err) {
+        return res.status(400).json({ success: false, msg: '[[contactpage:error.invalid.recaptcha]]' });
+    }
+
+    try {
+        await sendMail(req.body.email, req.body.name, req.body.subject, req.body.message);
+        res.json({ success: true });
+    }
+    catch (error) {
+        winston.error("[plugin/contactpage] Failed to send mail:" + error);
+        res.status(500).json({ success: false, message: '[[contactpage:error.mail]]' });
     }
 }
 
-async function sendMail(replyTo, name, subject, message, res) {
+function checkReCaptcha(privateKey, remoteIP, response) {
+    return new Promise((resolve, reject) => {
+        simpleRecaptcha(privateKey, remoteIP, response, (err, resp) => {
+            if (err) {
+                reject(err);
+            }
+            else {
+                resolve(resp);
+            }
+        });
+    });
+}
+
+function sendMail(replyTo, name, subject, message) {
     let mailParams = {
         content_text: message.replace(/(?:\r\n|\r|\n)/g, '<br>'),
         footer_text: ContactPage.messageFooter,
@@ -93,19 +124,12 @@ async function sendMail(replyTo, name, subject, message, res) {
         subject: subject,
         template: 'contact-page',
         uid: 0,
-        replyTo,
+        replyTo
     }
 
     mailParams = Object.assign({}, emailer._defaultPayload, mailParams);
 
-    try {
-        await emailer.sendToEmail('contact-page', ContactPage.contactEmail, undefined, mailParams);
-        res.json({ success: true });
-    }
-    catch (error) {
-        winston.error("[plugin/contactpage] Failed to send mail:" + error);
-        res.status(500).json({ success: false, message: '[[contactpage:error.mail]]' });
-    }
+    return emailer.sendToEmail('contact-page', ContactPage.contactEmail, undefined, mailParams);
 }
 
 function modifyFrom(mailData) {

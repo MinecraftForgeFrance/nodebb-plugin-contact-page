@@ -85,14 +85,31 @@ define('forum/contact', ['translator', 'jquery-form'], function(translator) {
 		}
 
 		// Load Google recaptcha if configured
-		if (config.contactpage.reCaptchaPubKey !== undefined) {
+		if (config.contactpage.reCaptchaPubKey) {
 			if (!$('script[src*="www.recaptcha.net/recaptcha/api.js"]').length) {
 				injectScript('//www.recaptcha.net/recaptcha/api.js?onload=__contactPageRenderReCaptcha__&render=explicit');
 			} else if (grecaptcha !== undefined) {
 				window.__contactPageRenderReCaptcha__();
 			}
 		}
+
+		// Load hcaptcha if configured
+		if (config.contactpage.hcaptchaPubKey) {
+			if (!$('script[src*="js.hcaptcha.com/1/api.js"]').length) {
+				injectScript('//js.hcaptcha.com/1/api.js?render=explicit');
+			}
+		}
 	};
+
+	// For a unknown reason, h-captcha won't load with onload query arg, so the plugin use ajaxify.end event to render it.
+	$(window).on('action:ajaxify.end', function (evt, data) {
+		if (data.url == 'contact' && config.contactpage.hcaptchaPubKey && hcaptcha) {
+			hcaptcha.render('contact-page-h-captcha', {
+				sitekey: config.contactpage.hcaptchaPubKey,
+			});
+		}
+	});
+
 	return Contact;
 });
 

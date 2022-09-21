@@ -17,6 +17,7 @@
     },
     "homepage": "https://github.com/MinecraftForgeFrance/nodebb-plugin-contact-page#readme",
     "dependencies": {
+        "hcaptcha": "^0.1.1",
         "simple-recaptcha-new": "^1.1.1"
     },
     "nbbpm": {
