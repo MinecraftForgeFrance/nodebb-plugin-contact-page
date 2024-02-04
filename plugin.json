@@ -8,8 +8,8 @@
 		"../admin/plugins/contact-page.js": "static/js/admin.js",
         "../client/contact.js": "static/js/contact.js"
 	},
-    "less": [
-		"static/style.less"
+    "scss": [
+		"static/style.scss"
 	],
     "hooks": [
         { "hook": "static:app.load", "method": "init" },

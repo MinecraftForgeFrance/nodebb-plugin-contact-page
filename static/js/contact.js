@@ -1,7 +1,7 @@
 'use strict';
 
-define('forum/contact', ['translator', 'jquery-form'], function(translator) {
-	var Contact = {};
+define('forum/contact', ['translator', 'jquery-form', 'alerts'], (translator, alerts) => {
+	const Contact = {};
 	Contact.init = async () => {
 		var email = $('#email');
 
@@ -95,20 +95,17 @@ define('forum/contact', ['translator', 'jquery-form'], function(translator) {
 
 		// Load hcaptcha if configured
 		if (config.contactpage.hcaptchaPubKey) {
-			if (!$('script[src*="js.hcaptcha.com/1/api.js"]').length) {
-				injectScript('//js.hcaptcha.com/1/api.js?render=explicit');
-			}
-		}
-	};
-
-	// For a unknown reason, h-captcha won't load with onload query arg, so the plugin use ajaxify.end event to render it.
-	$(window).on('action:ajaxify.end', function (evt, data) {
-		if (data.url == 'contact' && config.contactpage.hcaptchaPubKey && hcaptcha) {
-			hcaptcha.render('contact-page-h-captcha', {
-				sitekey: config.contactpage.hcaptchaPubKey,
+			$.getScript('https://hcaptcha.com/1/api.js').then(() => {
+				if (hcaptcha) {
+					hcaptcha.render('contact-page-h-captcha', {
+						sitekey: config.contactpage.hcaptchaPubKey,
+					});
+				}
+			}).fail(() => {
+				alerts.error('Error loading hcaptcha');
 			});
 		}
-	});
+	};
 
 	return Contact;
 });
@@ -119,7 +116,9 @@ window.__contactPageRenderReCaptcha__ = function() {
 		callback: function() {
 			var error = utils.param('error');
 			if (error) {
-				app.alertError(error);
+				require(['alerts'], function (alerts) {
+					alerts.error(error);
+				});
 			}
 		}
 	});

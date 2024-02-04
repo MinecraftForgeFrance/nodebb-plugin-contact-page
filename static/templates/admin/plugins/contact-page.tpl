@@ -1,73 +1,63 @@
-<form role="form" class="contact-page-settings">
-	<div class="row">
-		<div class="col-xs-12">
-            <h2>Contact page settings</h2>
-            <div class="row">
-                <div class="col-md-6 col-xs-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Main settings</div>
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <label for="contactEmail">
-                                    Contact email (where the message will be send)
-                                </label>
-                                <input class="form-control" type="email" name="contactEmail" id="contactEmail" />
-                            </div>
-                            <div class="form-group">
-                                <label for="messageFooter">
-                                    Message footer (optional)
-                                </label>
-                                <input class="form-control" type="text" name="messageFooter" id="messageFooter" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-xs-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Google Re-Captcha (optional)</div>
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <label for="reCaptchaPubKey">
-                                    Public API key
-                                </label>
-                                <input class="form-control" type="text" name="reCaptchaPubKey" id="reCaptchaPubKey" />
-                            </div>
+<div class="acp-page-container">
+	<!-- IMPORT admin/partials/settings/header.tpl -->
 
-                            <div class="form-group">
-                                <label for="reCaptchaPrivKey">
-                                    Private API key (keep it secret)
-                                </label>
-                                <input class="form-control" type="text" name="reCaptchaPrivKey" id="reCaptchaPrivKey" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+	<div class="row m-0">
+		<div id="spy-container" class="col-12 px-0 mb-4" tabindex="0">
+			<form class="form contact-page-settings">
+				<div class="mb-4">
+					<h5 class="fw-bold tracking-tight settings-header">Main settings</h5>
 
-                <div class="col-md-6 col-xs-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">hCaptcha (optional)</div>
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <label for="hcaptchaPubKey">
-                                    API key
-                                </label>
-                                <input class="form-control" type="text" name="hcaptchaPubKey" id="hcaptchaPubKey" />
-                            </div>
+                    <div class="mb-3">
+						<label class="form-label" for="contactEmail">
+							Contact email (where the message will be send)
+						</label>
+						<input class="form-control" type="email" name="contactEmail" id="contactEmail" />
+					</div>
 
-                            <div class="form-group">
-                                <label for="hcaptchaSecretKey">
-                                    Secret key (keep it secret)
-                                </label>
-                                <input class="form-control" type="text" name="hcaptchaSecretKey" id="hcaptchaSecretKey" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    <div class="mb-3">
+						<label class="form-label" for="messageFooter">
+							Message footer (optional)
+						</label>
+						<input class="form-control" type="text" name="messageFooter" id="messageFooter" />
+					</div>
+				</div>
+
+				<div class="mb-4">
+					<h5 class="fw-bold tracking-tight settings-header">Google Re-Captcha (optional)</h5>
+
+                    <div class="mb-3">
+						<label class="form-label" for="reCaptchaPubKey">
+							Public API key
+						</label>
+						<input class="form-control" type="text" name="reCaptchaPubKey" id="reCaptchaPubKey"  />
+					</div>
+
+                    <div class="mb-3">
+						<label class="form-label" for="reCaptchaPrivKey">
+							Private API key (keep it secret)
+						</label>
+                        <input class="form-control" type="text" name="reCaptchaPrivKey" id="reCaptchaPrivKey" />
+					</div>
+				</div>
+
+				<div class="mb-4">
+                    <h5 class="fw-bold tracking-tight settings-header">hCaptcha (optional)</h5>
+
+                    <div class="mb-3">
+						<label class="form-label" for="hcaptchaPubKey">
+							API key
+						</label>
+						<input class="form-control" type="text" name="hcaptchaPubKey" id="hcaptchaPubKey"  />
+					</div>
+
+                    <div class="mb-3">
+						<label class="form-label" for="hcaptchaSecretKey">
+							Private API key (keep it secret)
+						</label>
+                        <input class="form-control" type="text" name="hcaptchaSecretKey" id="hcaptchaSecretKey" />
+					</div>
+				</div>
+			</form>
 		</div>
 	</div>
-</form>
-
-<button id="save" class="floating-button mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
-	<i class="material-icons">save</i>
-</button>
+</div>

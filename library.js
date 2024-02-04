@@ -22,7 +22,7 @@ const ContactPage = {
         router.post('/contact', postContact);
 
         // admin panel
-        routeHelpers.setupAdminPageRoute(router, '/admin/plugins/contact-page', [], renderAdmin);
+        routeHelpers.setupAdminPageRoute(router, '/admin/plugins/contact-page', renderAdmin);
 
         try {
             const options = await meta.settings.get('contactpage');
@@ -139,7 +139,9 @@ function modifyFrom(mailData) {
 }
 
 function renderAdmin(req, res) {
-    return res.render('admin/plugins/contact-page');
+    return res.render('admin/plugins/contact-page', {
+        title: 'Contact page'
+    });
 }
 
 module.exports = ContactPage;
