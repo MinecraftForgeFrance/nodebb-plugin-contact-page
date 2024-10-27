@@ -11,6 +11,7 @@
     "scss": [
 		"static/style.scss"
 	],
+    "settingsRoute": "/admin/plugins/contact-page",
     "hooks": [
         { "hook": "static:app.load", "method": "init" },
         { "hook": "filter:admin.header.build", "method": "addToAdminNav" },
